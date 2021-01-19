@@ -37,6 +37,21 @@ int main ()
 
             out_rc.close();
         }
+
+        randomizeOneLevel(two_up, (uint32_t)123456789, two_up_ignore);
+
+        std::fstream out_tu;
+        out_tu.open(two_up_out, std::ios::out);
+        if (!out_tu.fail())
+        {
+            out_tu << two_up->toString();
+        }
+        else
+        {
+            std::cout << "Error opening two_up_out\n";
+        }
+
+        out_tu.close();
     }
     else
     {
