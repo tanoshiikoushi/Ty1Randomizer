@@ -43,9 +43,9 @@ bool change_GetTwoRangsFromRainbowCliffs(KIniRoot* rainbow_cliffs)
 
 void randomizeOneLevel(KIniRoot* level, uint32_t seed, std::string to_ignore)
 {
-    uint8_t randomize_count = 0;
+    uint16_t randomize_count = 0;
     std::string* valid_positions = new std::string[MAX_RANDOMIZED_COUNT];
-    for (uint8_t j = 0; j < MAX_RANDOMIZED_COUNT; j++)
+    for (uint16_t j = 0; j < MAX_RANDOMIZED_COUNT; j++)
     {
         valid_positions[j] = "";
     }
@@ -67,8 +67,6 @@ void randomizeOneLevel(KIniRoot* level, uint32_t seed, std::string to_ignore)
 
         iter = iter->getNextListMember();
     }
-
-
 
     // Gather valid Thunder Egg Positions
     iter = level->queryElementByName("THUNDEREGG")->getInstanceList();
@@ -101,12 +99,73 @@ void randomizeOneLevel(KIniRoot* level, uint32_t seed, std::string to_ignore)
         iter = iter->getNextListMember();
     }
 
-    uint8_t* available_ids = new uint8_t[randomize_count];
-    uint8_t rando_done_count = 0;
-    uint8_t temp_int = 0;
-    uint8_t to_select = 0;
+    // Gather valid opal positions
+    iter = level->queryElementByName("OPAL")->getInstanceList();
+    while (iter != nullptr)
+    {
+        if (!iter->isComment())
+        {
+            valid_positions[randomize_count] = iter->getCurrentContained()->queryPropertyByName("pos")->getPropertyValue();
+            randomize_count++;
+        }
 
-    for (uint8_t i = 0; i < randomize_count; i++)
+        iter = iter->getNextListMember();
+    }
+
+    // Gather valid extra life positions
+    iter = level->queryElementByName("EXTRALIFE")->getInstanceList();
+    while (iter != nullptr)
+    {
+        if (!iter->isComment())
+        {
+            valid_positions[randomize_count] = iter->getCurrentContained()->queryPropertyByName("pos")->getPropertyValue();
+            randomize_count++;
+        }
+
+        iter = iter->getNextListMember();
+    }
+
+    // Gather valid crate positions and remove waypoint positioning
+    iter = level->queryElementByName("CRATE")->getInstanceList();
+    while (iter != nullptr)
+    {
+        if (!iter->isComment())
+        {
+            if (iter->getCurrentContained()->queryPropertyByName("waypoints") != nullptr)
+            {
+                // waypoints are always at index 3
+                iter->getCurrentContained()->deleteMemberAtIndex(3);
+            }
+
+            valid_positions[randomize_count] = iter->getCurrentContained()->queryPropertyByName("pos")->getPropertyValue();
+            randomize_count++;
+        }
+
+        iter = iter->getNextListMember();
+    }
+
+    // Gather valid baskets
+    iter = level->queryElementByName("PICNICBASKET")->getInstanceList();
+    while (iter != nullptr)
+    {
+        if (!iter->isComment())
+        {
+            if (iter->getCurrentContained()->queryPropertyByName("bVisible")->getPropertyValue() == "1,true")
+            {
+                valid_positions[randomize_count] = iter->getCurrentContained()->queryPropertyByName("pos")->getPropertyValue();
+                randomize_count++;
+            }
+        }
+
+        iter = iter->getNextListMember();
+    }
+
+    uint16_t* available_ids = new uint16_t[randomize_count];
+    uint16_t rando_done_count = 0;
+    uint16_t temp_int = 0;
+    uint16_t to_select = 0;
+
+    for (uint16_t i = 0; i < randomize_count; i++)
     {
         available_ids[i] = i;
     }
@@ -172,6 +231,101 @@ void randomizeOneLevel(KIniRoot* level, uint32_t seed, std::string to_ignore)
         if (!iter->isComment())
         {
             if (to_ignore.find(iter->getCurrentContained()->queryPropertyByName("type")->getPropertyValue()) == std::string::npos)
+            {
+                to_select = rand() % (randomize_count-rando_done_count);
+                iter->getCurrentContained()->queryPropertyByName("pos")->setPropertyValue(valid_positions[available_ids[to_select]]);
+
+                // switch a valid position back to where this was
+                if (to_select != (randomize_count-rando_done_count-1))
+                {
+                    temp_int = available_ids[(randomize_count-rando_done_count-1)];
+                    available_ids[(randomize_count-rando_done_count-1)] = 0xFF;
+                    available_ids[to_select] = temp_int;
+                }
+
+                rando_done_count++;
+            }
+        }
+
+        iter = iter->getNextListMember();
+    }
+
+    // Write to valid opals
+    iter = level->queryElementByName("OPAL")->getInstanceList();
+    while (iter != nullptr)
+    {
+        if (!iter->isComment())
+        {
+            to_select = rand() % (randomize_count-rando_done_count);
+            iter->getCurrentContained()->queryPropertyByName("pos")->setPropertyValue(valid_positions[available_ids[to_select]]);
+
+            // switch a valid position back to where this was
+            if (to_select != (randomize_count-rando_done_count-1))
+            {
+                temp_int = available_ids[(randomize_count-rando_done_count-1)];
+                available_ids[(randomize_count-rando_done_count-1)] = 0xFF;
+                available_ids[to_select] = temp_int;
+            }
+
+            rando_done_count++;
+        }
+
+        iter = iter->getNextListMember();
+    }
+
+    // Write to valid crates
+    iter = level->queryElementByName("CRATE")->getInstanceList();
+    while (iter != nullptr)
+    {
+        if (!iter->isComment())
+        {
+            to_select = rand() % (randomize_count-rando_done_count);
+            iter->getCurrentContained()->queryPropertyByName("pos")->setPropertyValue(valid_positions[available_ids[to_select]]);
+
+            // switch a valid position back to where this was
+            if (to_select != (randomize_count-rando_done_count-1))
+            {
+                temp_int = available_ids[(randomize_count-rando_done_count-1)];
+                available_ids[(randomize_count-rando_done_count-1)] = 0xFF;
+                available_ids[to_select] = temp_int;
+            }
+
+            rando_done_count++;
+        }
+
+        iter = iter->getNextListMember();
+    }
+
+    // Write to valid extra lives
+    iter = level->queryElementByName("EXTRALIFE")->getInstanceList();
+    while (iter != nullptr)
+    {
+        if (!iter->isComment())
+        {
+            to_select = rand() % (randomize_count-rando_done_count);
+            iter->getCurrentContained()->queryPropertyByName("pos")->setPropertyValue(valid_positions[available_ids[to_select]]);
+
+            // switch a valid position back to where this was
+            if (to_select != (randomize_count-rando_done_count-1))
+            {
+                temp_int = available_ids[(randomize_count-rando_done_count-1)];
+                available_ids[(randomize_count-rando_done_count-1)] = 0xFF;
+                available_ids[to_select] = temp_int;
+            }
+
+            rando_done_count++;
+        }
+
+        iter = iter->getNextListMember();
+    }
+
+    // Write to valid baskets
+    iter = level->queryElementByName("PICNICBASKET")->getInstanceList();
+    while (iter != nullptr)
+    {
+        if (!iter->isComment())
+        {
+            if (iter->getCurrentContained()->queryPropertyByName("bVisible")->getPropertyValue() == "1,true")
             {
                 to_select = rand() % (randomize_count-rando_done_count);
                 iter->getCurrentContained()->queryPropertyByName("pos")->setPropertyValue(valid_positions[available_ids[to_select]]);

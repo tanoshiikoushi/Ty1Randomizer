@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 // General Constants
-const uint8_t MAX_RANDOMIZED_COUNT = 32;
+const uint16_t MAX_RANDOMIZED_COUNT = 1024;
 const std::string got_two_rangs_message = "GotBothRangs";
 const std::string activate_message = "Activate";
 
