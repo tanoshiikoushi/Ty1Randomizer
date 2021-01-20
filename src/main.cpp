@@ -2,12 +2,20 @@
 #include <iostream>
 
 
-int main ()
+int main (int argc, char* argv[])
 {
-    std::string rainbow_cliffs_lv2 = "D:/Ty RE/rkv/data_pc/extract/z1.lv2";
-    std::string rainbow_cliffs_out = "D:/Ty RE/rkv/edit_data_pc/extract/z1.lv2";
-    std::string two_up_lv2 = "D:/Ty RE/rkv/data_pc/extract/a1.lv2";
-    std::string two_up_out = "D:/Ty RE/rkv/edit_data_pc/extract/a1.lv2";
+    if (argc != 6)
+    {
+        std::cout << "Usage: Ty1Randomizer \"path_to_rc_in\" \"path_to_rc_out\" \"path_to_tu_in\" \"path_to_tu_out\" seed";
+        return 0;
+    }
+
+    std::string rainbow_cliffs_lv2 = argv[1]; //"D:/Ty RE/rkv/data_pc/extract/z1.lv2";
+    std::string rainbow_cliffs_out = argv[2]; //"D:/Ty RE/rkv/edit_data_pc/extract/z1.lv2";
+    std::string two_up_lv2 = argv[3]; //"D:/Ty RE/rkv/data_pc/extract/a1.lv2";
+    std::string two_up_out = argv[4]; //"D:/Ty RE/rkv/edit_data_pc/extract/a1.lv2";
+
+    uint32_t seed = std::stoi(argv[5], nullptr, 10);
 
     KIniRoot* rainbow_cliffs = new KIniRoot(nullptr);
     KIniRoot* two_up = new KIniRoot(nullptr);
@@ -38,7 +46,7 @@ int main ()
             out_rc.close();
         }
 
-        randomizeOneLevel(two_up, (uint32_t)123456789, two_up_ignore);
+        randomizeOneLevel(two_up, seed, two_up_ignore);
 
         std::fstream out_tu;
         out_tu.open(two_up_out, std::ios::out);

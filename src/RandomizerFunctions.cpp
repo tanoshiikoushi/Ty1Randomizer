@@ -54,10 +54,8 @@ void randomizeOneLevel(KIniRoot* level, uint32_t seed, std::string to_ignore)
 
     // Gather valid Cog Positions
     iter = level->queryElementByName("GOLDENCOG")->getInstanceList();
-    std::cout << "cogs gather\n";
     while (iter != nullptr)
     {
-        std::cout << (int)randomize_count << "\n";
         if (!iter->isComment())
         {
             if (to_ignore.find(iter->getCurrentContained()->queryPropertyByName("type")->getPropertyValue()) == std::string::npos)
@@ -74,7 +72,6 @@ void randomizeOneLevel(KIniRoot* level, uint32_t seed, std::string to_ignore)
 
     // Gather valid Thunder Egg Positions
     iter = level->queryElementByName("THUNDEREGG")->getInstanceList();
-    std::cout << "te gather\n";
     while (iter != nullptr)
     {
         if (!iter->isComment())
@@ -90,7 +87,6 @@ void randomizeOneLevel(KIniRoot* level, uint32_t seed, std::string to_ignore)
 
     // Gather valid Bilby Positions
     iter = level->queryElementByName("CAGEDBILBY")->getInstanceList();
-    std::cout << "bilby gather\n";
     while (iter != nullptr)
     {
         if (!iter->isComment())
@@ -118,7 +114,6 @@ void randomizeOneLevel(KIniRoot* level, uint32_t seed, std::string to_ignore)
     srand(seed);
 
     // Write to valid Thunder Eggs
-    std::cout << "te write\n";
     iter = level->queryElementByName("THUNDEREGG")->getInstanceList();
     while (iter != nullptr)
     {
@@ -145,7 +140,6 @@ void randomizeOneLevel(KIniRoot* level, uint32_t seed, std::string to_ignore)
     }
 
     // Write to valid Bilbies
-    std::cout << "bilby write\n";
     iter = level->queryElementByName("CAGEDBILBY")->getInstanceList();
     while (iter != nullptr)
     {
@@ -172,7 +166,6 @@ void randomizeOneLevel(KIniRoot* level, uint32_t seed, std::string to_ignore)
     }
 
     // Write to valid Cogs
-    std::cout << "cog write\n";
     iter = level->queryElementByName("GOLDENCOG")->getInstanceList();
     while (iter != nullptr)
     {
@@ -186,7 +179,6 @@ void randomizeOneLevel(KIniRoot* level, uint32_t seed, std::string to_ignore)
                 // switch a valid position back to where this was
                 if (to_select != (randomize_count-rando_done_count-1))
                 {
-                    std::cout << "Switched position " << (int)to_select << " with " << (int)(randomize_count-rando_done_count-1) << "\n";
                     temp_int = available_ids[(randomize_count-rando_done_count-1)];
                     available_ids[(randomize_count-rando_done_count-1)] = 0xFF;
                     available_ids[to_select] = temp_int;
